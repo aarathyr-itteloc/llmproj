@@ -1,25 +1,40 @@
+import argparse
 import os
+
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-api_key = os.environ.get("OPENROUTER_API_KEY")
 
+def generate_content(client, messages):
+    return client.chat.completions.create(
+        model="openrouter/free",
+        messages=messages,
+    )
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key,
-)
+def main():
+    parser = argparse.ArgumentParser(description="Chatbot")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("user_prompt", type=str, help="User prompt")
+    args = parser.parse_args()
 
-response = client.chat.completions.create(
-    model="openrouter/free",
-    messages=[
-        {
-            "role": "user",
-            "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",
-        }
-    ],
-)
+    load_dotenv()
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=api_key,
+    )
 
-print(response.choices[0].message.content)
+    messages = [
+        {"role": "user", "content": args.user_prompt},
+    ]
+
+    response = generate_content(client,messages)
+    if args.verbose:
+        print(f"User prompt: {args.user_prompt}")
+        if response.usage.prompt_tokens != None and response.usage.completion_tokens != None:
+            print(f"Prompt tokens: {response.usage.prompt_tokens}")
+            print(f"Response tokens: {response.usage.completion_tokens}")
+    print(response.choices[0].message.content)
+
+main()
