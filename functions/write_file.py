@@ -17,3 +17,26 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
         return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
     except Exception as e: # noqa: BLE001 - tool functions must always return a string
         return f'Error: {e}'
+
+
+schema_write_file = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": "Writes content to a specified file relative to the working directory, creating the file and any missing parent directories, or overwriting the file if it already exists",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Path of the file to write, relative to the working directory",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Content to write to the file",
+                },
+            },
+            "required": ["file_path", "content"],
+        },
+    },
+}
