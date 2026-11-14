@@ -18,6 +18,7 @@ def generate_content(client, messages):
 def main():
     parser = argparse.ArgumentParser(description="Chatbot")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("--model", action="store_true", help="Print the model that actually answered")
     parser.add_argument("user_prompt", type=str, help="User prompt")
     args = parser.parse_args()
 
@@ -35,6 +36,8 @@ def main():
 
     for _ in range(20):
         response = generate_content(client,messages)
+        if args.model:
+            print(f"Model: {response.model}")
         if args.verbose:
             print(f"User prompt: {args.user_prompt}")
             if response.usage.prompt_tokens != None and response.usage.completion_tokens != None:
